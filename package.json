@@ -1,0 +1,25 @@
+{
+  "name": "y2k-photo-booth",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Real-time photo booth app with green screen replacement",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "node server.js"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^4.11.0",
+    "@tensorflow-models/selfie-segmentation": "^0.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^4.4.9",
+    "tailwindcss": "^3.3.3",
+    "express": "^4.18.2"
+  }
+}
