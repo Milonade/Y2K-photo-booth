@@ -103,3 +103,17 @@ npm install
 
 # Start dev server
 npm run dev
+``` 
+
+### Production / built preview
+
+```bash
+npm run build
+npm run server
+```
+
+Or run both steps together:
+
+```bash
+npm start
+```
