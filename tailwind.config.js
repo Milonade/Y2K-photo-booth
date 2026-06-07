@@ -24,7 +24,7 @@ export default {
         'soft-green': '0 8px 32px rgba(200, 248, 216, 0.2)',
       },
       borderRadius: {
-        bubble: '3rem',
+        bubble: '0.5rem',
       },
     },
   },
