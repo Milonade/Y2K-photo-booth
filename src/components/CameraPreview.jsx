@@ -19,6 +19,8 @@ function CameraPreview({ selectedBackground }) {
   const [chromaEnabled, setChromaEnabled] = useState(true);
   const [threshold, setThreshold] = useState(60);
   const [softness, setSoftness] = useState(40);
+  const [timer, setTimer] = useState(null);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     selectedBackgroundRef.current = selectedBackground;
@@ -55,7 +57,12 @@ function CameraPreview({ selectedBackground }) {
   }, [softness]);
 
   useEffect(() => {
-    return () => stopCamera();
+    return () => {
+      stopCamera();
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -153,7 +160,7 @@ function CameraPreview({ selectedBackground }) {
     rafRef.current = requestAnimationFrame(renderLoop);
   };
 
-  const handleCapture = () => {
+  const capturePhoto = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const data = canvas.toDataURL('image/png');
@@ -163,14 +170,37 @@ function CameraPreview({ selectedBackground }) {
     a.click();
   };
 
+  const handleCapture = () => {
+    if (timer !== null) return; // Prevent multiple timers
+
+    setTimer(5);
+    timerRef.current = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          capturePhoto();
+          setTimer(null);
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
   return (
     <section className="rounded-bubble bg-white/30 backdrop-blur-md border border-white/50 p-4 shadow-soft">
       <h2 className="text-center text-xl font-semibold text-purple-700">Camera Preview</h2>
 
       <div className="mt-3">
-        <div className="mb-3">
+        <div className="mb-3 relative">
           <canvas ref={canvasRef} className="w-full max-h-[300px] rounded-2xl border border-white/40 bg-black" />
           <video ref={videoRef} style={{ display: 'none' }} playsInline />
+          
+          {timer !== null && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-2xl">
+              <div className="text-8xl font-bold text-white drop-shadow-lg">{timer}</div>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -181,7 +211,7 @@ function CameraPreview({ selectedBackground }) {
               <button onClick={stopCamera} className="rounded-2xl bg-red-400 px-5 py-3 font-semibold text-white shadow-soft">Stop Camera</button>
             )}
 
-            <button onClick={handleCapture} className="rounded-2xl bg-white/60 backdrop-blur-sm border border-white/80 px-5 py-3 font-semibold text-purple-700 shadow-soft">Capture</button>
+            <button onClick={handleCapture} disabled={!streaming || timer !== null} className="rounded-2xl bg-white/60 backdrop-blur-sm border border-white/80 px-5 py-3 font-semibold text-purple-700 shadow-soft disabled:opacity-50 disabled:cursor-not-allowed">Capture</button>
 
             <button onClick={handleCapture} className="rounded-2xl bg-white/60 backdrop-blur-sm border border-white/80 px-5 py-3 font-semibold text-purple-700 shadow-soft">Download</button>
           </div>
